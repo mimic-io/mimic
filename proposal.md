@@ -1,7 +1,7 @@
 # Proposal: Modern Go language dialect for configuration templating and configuration as code
 
 Status: Idea
-Author: Bartek Plotka [@bwplotka](https://bwplotka.dev)
+Author: Bartek Płotka [@bwplotka](https://bwplotka.dev)
 Date: 23.04.2021
 
 ### Problem Statement
@@ -34,8 +34,8 @@ Existing configuration languages have serious problems then:
 At the startup I worked for (Improbable, UK), we had a vision to use Go for our infrastructure and configuration resources. It solves many problems that other languages don't. Primarily:
 
 * Go is extremely easy to learn and read.
-  It's typed, yet compilation is ultra fast (by design), so it feels like script. Furthermore script command is provided: `go run`, so you don't see build artifact.
-* Tooling is mature and incredibly useful. Since most of the infrastructure projects are written in Go you can navigate to their structs that are used for parsing yaml, toml etc and import them directly. You can navigate to the code to understand each flag, you can read documentation and see the structs changing over time.
+  It's typed, yet compilation is ultrafast (by design), so it feels like script. Furthermore script command is provided: `go run`, so you don't see build artifact.
+* Tooling is mature and incredibly useful. Since most of the infrastructure projects are written in Go you can navigate to their structs that are used for parsing yaml, toml etc and import them directly. You can navigate to the code to understand each flag, you can read documentation and see the structs changing over time. Testing, benchmarking are stable and extremely useful.
 * Mature dependency tooling.
 * For other languages other tooling can be used like OpenAPI or protobuf to generate Go the code with documentation.
 * Since it's a Turing complete language you can create arbitrary templates and templating logic. You can expose this as library too for others to use.
@@ -43,24 +43,36 @@ At the startup I worked for (Improbable, UK), we had a vision to use Go for our 
 
 At the end it worked well for some engineers, yet portion of engineers from different than Go backgrounds was finding it hard (You can play with open source project which was ported from that code and is available here: https://github.com/bwplotka/mimic). Let's go through some issues that people reported about Go:
 
-* It "feels" like programming not configuring.
+* Using Go "feels" like programming not configuring. There are voices that configuration is never static so should be easy to move and shape.
 * There is certain amount of boilerplate e.g error handling or type creations (e.g using protobuf).
 * The language patterns like channels, go routines, IO, syscalls etc are problematic if overused in templating language. It is harder to read and
   might obfuscate templating which has to be simple.
 * While dependency (Go Modules) mechanism works well it downloads extreme amount of unnecesary dependencies. Since we mostly use structs and small Marshalling methods from other Go projects, it's just not needed to fight with dependency collisions (aka dependency hell), and compilation error in unrelated code to the actual structure.
+* Composition is hard due to type system (e.g merging structs)
 
 ### Goals
 
-* Maintain Go tooling or make sure tooling like Go works from day 1.
+* Type safe
+* Not a new language, use good, existing programming language for a start allowing small learning curve.
+* Rich auto-completion, navigation and code highlighting tooling from day 1.
+* Lightweight, yet familiar dependency management.
+* Provider easier composition techniques.
 
 ### Proposal
 
-Create language which uses Go syntax, yet limits the language and simplifying it in order to allow better configuration experience.
+Create language which uses Go syntax, yet limits the language and simplify it in order to allow better configuration experience.
+To leverage tooling we want tie in to Go as much as possible.
 
+#### Ideas
+
+* [ ] Leverage compatibility with Go tooling
 * [ ] Extension to Go modules, allowing to extract types downloading the linked structs and marshalers only.
-* [ ] Less boilerplate on types
+* [ ] Less boilerplate on type definitions
+* [ ] Limit language features?
+* [ ] Compiler that creates Go from the language or Go fork?
 
 ### Open Questions:
 
 * Should this language be compatible with Go? Can we import Go code? Is Go code compilable?
 * Should we use .go or some other extension?
+* Two modes strict and non strict?
